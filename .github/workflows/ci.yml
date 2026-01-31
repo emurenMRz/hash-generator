@@ -34,7 +34,7 @@ jobs:
         run: chmod +x ./src-wasm/build.sh
 
       - name: Build WASM
-        run: ./src-wasm/build.sh
+        run: cd ./src-wasm && ./build.sh
 
       - name: Package VSIX
         run: npx vsce package
