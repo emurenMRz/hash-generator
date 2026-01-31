@@ -46,23 +46,32 @@ jobs:
         id: vsix
         run: echo "filename=$(ls *.vsix)" >> $GITHUB_OUTPUT
 
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: v${{ github.run_number }}
-          release_name: Release v${{ github.run_number }}
-          draft: false
-          prerelease: false
+      - name: Read version from package.json
+        id: pkg
+        run: echo "version=$(node -p \"require('./package.json').version\")" >> $GITHUB_OUTPUT
 
-      - name: Upload VSIX to Release
-        uses: actions/upload-release-asset@v1
+      - name: Fail if release already exists
+        run: |
+          VERSION=${{ steps.pkg.outputs.version }}
+          TAG="v$VERSION"
+          echo "Checking if release $TAG exists..."
+
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/repos/${{ github.repository }}/releases/tags/$TAG)
+
+          if [ "$STATUS" = "200" ]; then
+            echo "Release $TAG already exists. Failing workflow."
+            exit 1
+          else
+            echo "Release $TAG does not exist. Continuing."
+          fi
+
+      - name: Create Release & Upload VSIX
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.pkg.outputs.version }}
+          name: Release v${{ steps.pkg.outputs.version }}
+          files: ${{ steps.vsix.outputs.filename }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ steps.vsix.outputs.filename }}
-          asset_name: ${{ steps.vsix.outputs.filename }}
-          asset_content_type: application/octet-stream
