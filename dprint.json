@@ -1,0 +1,20 @@
+{
+	"includes": ["**/*.{ts,js,json}"],
+	"plugins": [
+		"https://plugins.dprint.dev/typescript-0.83.0.wasm",
+		"https://plugins.dprint.dev/json-0.17.0.wasm"
+	],
+	"typescript": {
+		"lineWidth": 160,
+		"indentWidth": 4,
+		"useTabs": true,
+		"newLineKind": "lf",
+		"quoteStyle": "alwaysSingle",
+		"trailingCommas": "never"
+	},
+	"json": {
+		"indentWidth": 4,
+		"useTabs": true,
+		"newLineKind": "lf"
+	}
+}

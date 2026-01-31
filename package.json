@@ -1,0 +1,51 @@
+{
+	"name": "hash-generator",
+	"displayName": "Hash Generator",
+	"description": "Generate various hash values (SHA-256, SHA-512, HMAC-SHA256, bcrypt, Argon2id) directly",
+	"publisher": "mrz-net",
+	"repository": "https://github.com/emurenMRz/hash-generator",
+	"version": "0.1.0",
+	"engines": {
+		"vscode": "^1.108.1"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [],
+	"main": "./out/extension.js",
+	"contributes": {
+		"commands": [
+			{
+				"command": "hashGenerator.generate",
+				"title": "Generate Hash"
+			}
+		],
+		"menus": {
+			"editor/context": [
+				{
+					"command": "hashGenerator.generate",
+					"when": "editorTextFocus"
+				}
+			]
+		}
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run pretest",
+		"compile": "tsc -p ./",
+		"watch": "tsc -watch -p ./",
+		"pretest": "npm run compile && npm run lint && npm run format",
+		"lint": "eslint src",
+		"test": "vscode-test",
+		"format": "dprint fmt"
+	},
+	"devDependencies": {
+		"@types/vscode": "^1.108.1",
+		"@types/mocha": "^10.0.10",
+		"@types/node": "22.x",
+		"typescript-eslint": "^8.52.0",
+		"eslint": "^9.39.2",
+		"typescript": "^5.9.3",
+		"@vscode/test-cli": "^0.0.12",
+		"@vscode/test-electron": "^2.5.2"
+	}
+}
