@@ -39,8 +39,27 @@ jobs:
       - name: Package VSIX
         run: npx vsce package
 
-      - name: Upload VSIX artifact
-        uses: actions/upload-artifact@v4
+      - name: Get VSIX filename
+        id: vsix
+        run: echo "filename=$(ls *.vsix)" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: extension-vsix
-          path: "*.vsix"
+          tag_name: v${{ github.run_number }}
+          release_name: Release v${{ github.run_number }}
+          draft: false
+          prerelease: false
+
+      - name: Upload VSIX to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ steps.vsix.outputs.filename }}
+          asset_name: ${{ steps.vsix.outputs.filename }}
+          asset_content_type: application/octet-stream
